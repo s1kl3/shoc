@@ -27,6 +27,10 @@ OCL_CPPFLAGS    = -I$(top_srcdir)/src/opencl/common
 OCL_LDFLAGS		= -L$(top_builddir)/src/opencl/common
 OCL_LIBS        = -lSHOCCommonOpenCL -lSHOCCommon @OPENCL_LIBS@
 
+OCRUN_CPPFLAGS  = -I$(top_srcdir)/src/opencl/common @OPENCRUN_CPPFLAGS@
+OCRUN_LDFLAGS   = -L$(top_builddir)/src/opencl/common @OPENCRUN_LDFLAGS@
+OCRUN_LIBS      = -lSHOCCommonOpenCL -lSHOCCommon @OPENCRUN_LIBS@
+
 NVCC            = @NVCC@
 CUDA_CXX        = @NVCC@
 CUDA_INC        = -I@CUDA_INCDIR@ -I$(top_srcdir)/src/cuda/common

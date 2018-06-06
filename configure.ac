@@ -137,7 +137,7 @@ AS_IF([test "x$with_opencl" != xno],
                     [AC_MSG_RESULT($OPENCL_LIBS)],
                     [AC_MSG_RESULT([no])
                      if test "x$with_opencl" != xcheck; then
-                         AC_MSG_FAILURE([OpenCL support was requested, but no usable OpenCL library was fund])
+                         AC_MSG_FAILURE([OpenCL support was requested, but no usable OpenCL library was found])
                      fi
                     ]
                  )
@@ -157,6 +157,93 @@ AS_IF([test "x$with_opencl" != xno],
             ])
     ])
 AM_CONDITIONAL([BUILD_OPENCL], [test "x$with_opencl" = "xyes"])
+
+
+# OpenCRun support
+AC_ARG_WITH([opencrun],
+    [AS_HELP_STRING([--with-opencrun],
+        [build OpenCRun versions of SHOC benchmark programs @<:@default=check@:>@])],
+    [],
+    [with_opencrun=check])
+
+# detect/verify we have a working OpenCL header and a working OpenCRun library
+AS_IF([test "x$with_opencrun" != xno],
+      [
+        # check fot the platform-query binary provided by OpenCRun installation
+        AC_PATH_PROG([PLATFORM_QUERY],[platform_query],[])
+
+        AS_IF([test "x$PLATFORM_QUERY" != x],
+              [savedLIBS=$LIBS
+               savedCPPFLAGS=$CPPFLAGS
+               savedLDFLAGS=$LDFLAGS
+
+               # find OpenCRun and OpenCL include path based on platform-query command
+               PLATFORM_QUERY_DIR=`AS_DIRNAME([$PLATFORM_QUERY])`
+               OPENCRUN_PREFIX=`AS_DIRNAME($PLATFORM_QUERY_DIR)`
+               OPENCRUN_HEADERS_DIR=${OPENCRUN_PREFIX}/include
+               OPENCRUN_LIBS_DIR=${OPENCRUN_PREFIX}/lib
+
+               OPENCRUN_CPPFLAGS="-I$OPENCRUN_HEADERS_DIR"
+               OPENCRUN_LDFLAGS="-L$OPENCRUN_LIBS_DIR"
+
+               CPPFLAGS="$OPENCRUN_CPPFLAGS $CPPFLAGS"
+               LDFLAGS="$OPENCRUN_LDFLAGS $LDFLAGS"
+
+
+               # check for usable OpenCL header
+               # note C++ binding uses opencl.h, not just cl.h
+               AC_MSG_NOTICE([checking for usable OpenCL opencl.h header])
+               AC_CHECK_HEADER([OpenCL/opencl.h],
+                   [OPENCL_HEADER='"OpenCL/opencl.h"'],
+                   [AC_CHECK_HEADER([CL/opencl.h],
+                       [OPENCL_HEADER='"CL/opencl.h"'],
+                       [if test "x$with_opencrun" != xcheck; then
+                           AC_MSG_FAILURE([OpenCRun support was requested, but no usable OpenCL header was found])
+                        fi
+                       ]
+                    )
+                   ]
+               )
+               
+               AS_IF([test "x$OPENCL_HEADER" != x],
+                     [
+                      AC_MSG_CHECKING([for usable OpenCRun library])
+                      OPENCRUN_LIBS="-lOpenCRun"
+                      LIBS="$OPENCRUN_LIBS $savedLIBS"
+                      AC_LINK_IFELSE( [AC_LANG_PROGRAM([@%:@include $OPENCL_HEADER],[clGetPlatformIDs(0,0,0);])],
+                      [AC_MSG_RESULT($OPENCRUN_LIBS)
+                       AC_DEFINE([HAVE_OPENCRUN], [1], [Define to 1 if using OpenCRun.])
+                      ],
+                      [AC_MSG_RESULT([no])
+                       if test "x$with_opencrun" != xcheck; then
+                         AC_MSG_FAILURE([OpenCRun support was requested, but no usable OpenCRun library was found])
+                       fi
+                      ])
+                     ])
+
+               LIBS=$savedLIBS
+               CPPFLAGS=$savedCPPFLAGS
+               LDFLAGS=$savedLDFLAGS
+              ],
+              [if test "x$with_opencrun" != xcheck; then
+               AC_MSG_FAILURE([OpenCRun support was requested, but no usable OpenCRun installation found])
+               fi
+              ]
+        )
+
+        AS_IF([test "x$OPENCL_HEADER" != "x" -a "x$OPENCRUN_LIBS" != "x"],
+            [with_opencrun=yes
+             MPI_SUBDIRS="$MPI_SUBDIRS opencl"
+             AC_SUBST([OPENCRUN_LIBS])
+             AC_SUBST([OPENCRUN_CPPFLAGS])
+             AC_SUBST([OPENCRUN_LDFLAGS])
+            ],
+            [AC_MSG_NOTICE([no usable OpenCRun installation found])
+             with_opencrun=no
+            ])
+     ])
+AM_CONDITIONAL([BUILD_OPENCRUN], [test "x$with_opencrun" = "xyes"])
+
 
 
 # CUDA support
@@ -383,7 +470,7 @@ AS_IF([test "x$with_mpi" != xno],
         CXX=$savedCXX
 
         AS_IF([test "x$MPICXX" != "x"],
-            [ AS_IF([test "x$with_opencl" = xyes -o "x$with_cuda" = xyes],
+            [ AS_IF([test "x$with_opencl" = xyes -o "x$with_cuda" = xyes -o "$with_opencrun" = xyes],
                   [ with_mpi=yes
                     USE_MPI=yes
                   ],
@@ -492,6 +579,38 @@ AC_CONFIG_FILES([Makefile
                  src/opencl/level2/Makefile
                  src/opencl/level2/s3d/Makefile
                  src/opencl/level2/s3d/epmpi/Makefile
+                 src/opencrun/Makefile
+                 src/opencrun/common/Makefile
+                 src/opencrun/level0/Makefile
+                 src/opencrun/level0/epmpi/Makefile
+                 src/opencrun/level1/Makefile
+                 src/opencrun/level1/bfs/Makefile
+                 src/opencrun/level1/bfs/epmpi/Makefile
+                 src/opencrun/level1/fft/Makefile
+                 src/opencrun/level1/fft/epmpi/Makefile
+                 src/opencrun/level1/md/Makefile
+                 src/opencrun/level1/md/epmpi/Makefile
+                 src/opencrun/level1/md5hash/Makefile
+                 src/opencrun/level1/md5hash/epmpi/Makefile
+                 src/opencrun/level1/reduction/Makefile
+                 src/opencrun/level1/reduction/epmpi/Makefile
+                 src/opencrun/level1/reduction/tpmpi/Makefile
+                 src/opencrun/level1/scan/Makefile
+                 src/opencrun/level1/scan/epmpi/Makefile
+                 src/opencrun/level1/scan/tpmpi/Makefile
+                 src/opencrun/level1/gemm/Makefile
+                 src/opencrun/level1/gemm/epmpi/Makefile
+                 src/opencrun/level1/sort/Makefile
+                 src/opencrun/level1/sort/epmpi/Makefile
+                 src/opencrun/level1/spmv/Makefile
+                 src/opencrun/level1/spmv/epmpi/Makefile
+                 src/opencrun/level1/stencil2d/Makefile
+                 src/opencrun/level1/stencil2d/tpmpi/Makefile
+                 src/opencrun/level1/triad/Makefile
+                 src/opencrun/level1/triad/epmpi/Makefile
+                 src/opencrun/level2/Makefile
+                 src/opencrun/level2/s3d/Makefile
+                 src/opencrun/level2/s3d/epmpi/Makefile
                  src/stability/Makefile
                  src/stability/epmpi/Makefile
                  tools/Makefile
