@@ -38,7 +38,7 @@
 /// we need to start the padding in the first byte following the message,
 /// and we only have two words to work with here....
 /// It also assumes words[] has all zero bits except the chars of interest.
-inline void md5_2words(unsigned int *words, unsigned int len,
+__attribute__((always_inline)) void md5_2words(unsigned int *words, unsigned int len,
                        unsigned int *digest)
 {
     // For any block but the first one, these should be passed in, not
@@ -168,7 +168,7 @@ inline void md5_2words(unsigned int *words, unsigned int len,
 //
 // Modifications:
 // ****************************************************************************
-inline void IndexToKey(unsigned int index, int byteLength, int valsPerByte,
+__attribute__((always_inline)) void IndexToKey(unsigned int index, int byteLength, int valsPerByte,
                        unsigned char vals[8])
 {
     vals[0] = index % valsPerByte;

@@ -13,7 +13,7 @@
 #endif
 
 
-inline
+__attribute__((always_inline))
 int
 ToGlobalRow( int gidRow, int lszRow, int lidRow )
 {
@@ -22,7 +22,7 @@ ToGlobalRow( int gidRow, int lszRow, int lidRow )
     return gidRow*lszRow + lidRow;
 }
 
-inline
+__attribute__((always_inline))
 int
 ToGlobalCol( int gidCol, int lszCol, int lidCol )
 {
@@ -32,7 +32,7 @@ ToGlobalCol( int gidCol, int lszCol, int lidCol )
 }
 
 
-inline
+__attribute__((always_inline))
 int
 ToFlatHaloedIdx( int row, int col, int rowPitch )
 {
@@ -42,7 +42,7 @@ ToFlatHaloedIdx( int row, int col, int rowPitch )
 }
 
 
-inline
+__attribute__((always_inline))
 int
 ToFlatIdx( int row, int col, int pitch )
 {

@@ -34,13 +34,13 @@
 #define iexp_3_8   (T2)( -1, 1 )//requires post-multiply by 1/sqrt(2)
 
 
-inline void globalLoads8(T2 *data, __global T2 *in, int stride){
+__attribute__((always_inline)) void globalLoads8(T2 *data, __global T2 *in, int stride){
     for( int i = 0; i < 8; i++ )
         data[i] = in[i*stride];
 }
 
 
-inline void globalStores8(T2 *data, __global T2 *out, int stride){
+__attribute__((always_inline)) void globalStores8(T2 *data, __global T2 *out, int stride){
     int reversed[] = {0,4,2,6,1,5,3,7};
 
 //#pragma unroll
@@ -49,7 +49,7 @@ inline void globalStores8(T2 *data, __global T2 *out, int stride){
 }
 
 
-inline void storex8( T2 *a, __local T *x, int sx ) {
+__attribute__((always_inline)) void storex8( T2 *a, __local T *x, int sx ) {
     int reversed[] = {0,4,2,6,1,5,3,7};
 
 //#pragma unroll
@@ -57,7 +57,7 @@ inline void storex8( T2 *a, __local T *x, int sx ) {
         x[i*sx] = a[reversed[i]].x;
 }
 
-inline void storey8( T2 *a, __local T *x, int sx ) {
+__attribute__((always_inline)) void storey8( T2 *a, __local T *x, int sx ) {
     int reversed[] = {0,4,2,6,1,5,3,7};
 
 //#pragma unroll
@@ -66,12 +66,12 @@ inline void storey8( T2 *a, __local T *x, int sx ) {
 }
 
 
-inline void loadx8( T2 *a, __local T *x, int sx ) {
+__attribute__((always_inline)) void loadx8( T2 *a, __local T *x, int sx ) {
     for( int i = 0; i < 8; i++ )
         a[i].x = x[i*sx];
 }
 
-inline void loady8( T2 *a, __local T *x, int sx ) {
+__attribute__((always_inline)) void loady8( T2 *a, __local T *x, int sx ) {
     for( int i = 0; i < 8; i++ )
         a[i].y = x[i*sx];
 }
@@ -85,7 +85,7 @@ inline void loady8( T2 *a, __local T *x, int sx ) {
     loady8 ( a, l, dl );  if( (sync)&1 ) barrier(CLK_LOCAL_MEM_FENCE);  \
 }
 
-inline T2 exp_i( T phi ) {
+__attribute__((always_inline)) T2 exp_i( T phi ) {
 //#ifdef USE_NATIVE
 //    return (T2)( native_cos(phi), native_sin(phi) );
 //#else
@@ -93,10 +93,10 @@ inline T2 exp_i( T phi ) {
 //#endif
 }
 
-inline T2 cmplx_mul( T2 a, T2 b ) { return (T2)( a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x ); }
-inline T2 cm_fl_mul( T2 a, T  b ) { return (T2)( b*a.x, b*a.y ); }
-inline T2 cmplx_add( T2 a, T2 b ) { return (T2)( a.x + b.x, a.y + b.y ); }
-inline T2 cmplx_sub( T2 a, T2 b ) { return (T2)( a.x - b.x, a.y - b.y ); }
+__attribute__((always_inline)) T2 cmplx_mul( T2 a, T2 b ) { return (T2)( a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x ); }
+__attribute__((always_inline)) T2 cm_fl_mul( T2 a, T  b ) { return (T2)( b*a.x, b*a.y ); }
+__attribute__((always_inline)) T2 cmplx_add( T2 a, T2 b ) { return (T2)( a.x + b.x, a.y + b.y ); }
+__attribute__((always_inline)) T2 cmplx_sub( T2 a, T2 b ) { return (T2)( a.x - b.x, a.y - b.y ); }
 
 
 #define twiddle8(a, i, n )                                              \

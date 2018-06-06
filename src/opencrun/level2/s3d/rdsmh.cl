@@ -68,7 +68,7 @@
 #define A(b, c)  idx2(A, (((b)*A_DIM)+c) )
 
 
-inline real POLYX(real x, real c0, real c1,
+__attribute__((always_inline)) real POLYX(real x, real c0, real c1,
 		real c2, real c3)
 {
 	return (((((c3) * (x) + (c2)) * (x) + (c1)) * (x) + (c0)) * (x));
