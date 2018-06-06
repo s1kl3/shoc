@@ -9,7 +9,8 @@ CXX = ${MPICXX}
 CXXLD = ${MPICXX}
 
 AM_LDFLAGS = $(OCL_LDFLAGS)
-CPPFLAGS += $(MPI_CPPFLAGS) $(OCL_CPPFLAGS) -I${top_srcdir}/src/mpi/common
+AM_CPPFLAGS = $(CPPFLAGS)
+AM_CPPFLAGS += $(MPI_CPPFLAGS) $(OCL_CPPFLAGS) -I${top_srcdir}/src/mpi/common
 L1LIBS = -lSHOCCommonOpenCL -lSHOCCommon $(OCL_LIBS) $(LIBS)
 
 # what is the destination for programs built from this directory?

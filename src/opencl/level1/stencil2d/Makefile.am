@@ -10,7 +10,8 @@ include $(top_builddir)/config/targets.mk
 VPATH = $(srcdir):$(srcdir)/../../common:$(srcdir)/../../../common
 
 AM_LDFLAGS = $(OCL_LDFLAGS)
-CPPFLAGS += $(OCL_CPPFLAGS)
+AM_CPPFLAGS = $(CPPFLAGS)
+AM_CPPFLAGS += $(OCL_CPPFLAGS)
 L1LIBS = $(OCL_LIBS) $(LIBS)
 
 # what is the destination for programs built from this directory?
