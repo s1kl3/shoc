@@ -361,9 +361,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/opencrun/level1/sort/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/opencrun/level1/sort/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/opencrun/level1/sort/Makefile
+	  $(AUTOMAKE) --foreign src/opencrun/level1/sort/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
